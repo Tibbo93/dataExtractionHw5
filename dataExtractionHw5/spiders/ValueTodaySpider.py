@@ -10,9 +10,11 @@ class ValueTodaySpider(scrapy.Spider):
     allowed_domains = ['www.value.today']
     base_url = 'https://www.value.today'
     fields_to_extract = \
-        ['Headquarters Country', 'Headquarters Sub Region', 'World Rank (Jan-07-2022)', 'Market Value (Jan 1st 2020)',
+        ['Headquarters Country', 'Headquarters Sub Region', 'World Rank (Jan-07-2022)', 'Market Value (Jan-07-2022)',
          'Annual Revenue in USD', 'Annual Net Income in USD', 'Annual Results for Year Ending', 'Total Assets in USD',
-         'Total Liabilities in USD', 'Total Equity in USD', 'Headquarters Region / City']
+         'Total Liabilities in USD', 'Total Equity in USD', 'Headquarters Region / City', 'Company Business',
+         'Number of Employees', 'Headquarters Continent', 'IPO Year', 'CEO:', 'Founders', 'Founded Year',
+         'Company Website:']
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -30,32 +32,38 @@ class ValueTodaySpider(scrapy.Spider):
         fields = {'id': uuid.uuid4().hex}
 
         name = response.xpath(".//div[contains(@class, 'field--name-node-title')]/h1/a/text()").extract_first()
-        fields['name'] = name.strip().lower()
+        fields['name'] = name.strip()
 
-        group_header_fields = response.xpath(
-            ".//div[contains(@class, 'node')]/div[contains(@class, 'group-header')]/div[not(contains(@class, "
-            "'field--name-node-title')) and not(contains(@class, 'field--name-field-company-logo'))]")
+        fields_node = response.xpath(".//div[contains(@class, 'group-header') or contains(@class, 'group-left') or "
+                                     "contains(@class, 'group-right')  ]/div[not(contains(@class, 'field--item'))]")
 
-        for field in group_header_fields:
+        for field in fields_node:
             label = field.xpath(".//div[@class='field--label']/text()").extract_first()
 
             if label is not None and label.strip() in self.fields_to_extract:
+
+                if label == 'Company Website:':
+                    item = field.xpath(".//div[@class='field--item']/a/@href").extract_first()
+                    label = re.sub('\\s/\\s|\\s', '_', label.strip().replace(':', '')).lower()
+                    fields[label] = item
+                    continue
+
                 index = label.find('(')
                 if index != -1:
                     label = label[:index]
 
-                label = re.sub('\\s/\\s|\\s', '_', label.strip()).lower()
+                label = re.sub('\\s/\\s|\\s', '_', label.strip().replace(':', '')).lower()
 
                 item = field.xpath(".//div[@class='field--item']/text()").extract_first()
                 if item is None:
-                    item = field.xpath(".//div[@class='field--item']/a/text()").extract_first()
+                    item = field.xpath(".//div[@class='field--item']/a/text()").extract()
+                    if item is not None and len(item) == 1:
+                        item = item.pop()
 
                 if item is not None:
-                    fields[label] = item.strip().lower()
+                    fields[label] = item
 
-            for key in fields:
-                company[key] = fields[key]
-
-        print(company)
+        for key in fields:
+            company[key] = fields[key]
 
         return company
