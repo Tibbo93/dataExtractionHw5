@@ -6,9 +6,9 @@ from dataExtractionHw5.items import ValueTodayCompanyItem
 
 
 class ValueTodaySpider(scrapy.Spider):
-    name = 'valueTodaySpider'
+    name = 'valueToday'
     allowed_domains = ['www.value.today']
-    base_url = 'https://www.value.today'
+    start_urls = ['https://www.value.today/']
     fields_to_extract = \
         ['Headquarters Country', 'Headquarters Sub Region', 'World Rank (Jan-07-2022)', 'Market Value (Jan-07-2022)',
          'Annual Revenue in USD', 'Annual Net Income in USD', 'Annual Results for Year Ending', 'Total Assets in USD',
@@ -16,16 +16,23 @@ class ValueTodaySpider(scrapy.Spider):
          'Number of Employees', 'Headquarters Continent', 'IPO Year', 'CEO:', 'Founders', 'Founded Year',
          'Company Website:']
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, num_instances=1000):
+        super().__init__()
+        self.num_instances = int(num_instances)
 
-    def start_requests(self):
-        yield scrapy.Request(url=self.base_url, callback=self.parse)
+    def parse(self, response):
+        companies_url = response.xpath(".//div[contains(@class, 'field--name-node-title')]/h2/a/@href").extract()
+        for url in companies_url:
+            if self.num_instances <= 0:
+                return
+            self.num_instances -= 1
+            yield response.follow(url, self.parse_company)
 
-    def parse(self, response, **kwargs):
-        company_url = response.xpath(".//div[contains(@class, 'field--name-node-title')]/h2/a/@href").extract_first()
-        yield scrapy.Request(url=self.base_url + company_url, headers=kwargs.get('headers'),
-                             callback=self.parse_company)
+        # make request for next page
+        next_page = response.xpath(".//ul[contains(@class, 'pagination')]/li[contains(@class, "
+                                   "'pager__item--next')]/a/@href").extract_first()
+        if next_page is not None:
+            yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
         company = ValueTodayCompanyItem()
