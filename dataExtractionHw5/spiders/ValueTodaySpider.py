@@ -16,7 +16,7 @@ class ValueTodaySpider(scrapy.Spider):
          'Number of Employees', 'Headquarters Continent', 'IPO Year', 'CEO:', 'Founders', 'Founded Year',
          'Company Website:']
 
-    def __init__(self, num_instances=1000):
+    def __init__(self, num_instances=20):
         super().__init__()
         self.num_instances = int(num_instances)
 
