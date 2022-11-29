@@ -1,6 +1,7 @@
 import uuid
 import scrapy
 import re
+import string
 
 from dataExtractionHw5.items import ValueTodayCompanyItem
 
@@ -39,7 +40,7 @@ class ValueTodaySpider(scrapy.Spider):
         fields = {'id': uuid.uuid4().hex}
 
         name = response.xpath(".//div[contains(@class, 'field--name-node-title')]/h1/a/text()").extract_first()
-        fields['name'] = name.strip()
+        fields['name'] = string.capwords(name.strip())
 
         fields_node = response.xpath(".//div[contains(@class, 'group-header') or contains(@class, 'group-left') or "
                                      "contains(@class, 'group-right')  ]/div[not(contains(@class, 'field--item'))]")
@@ -64,7 +65,8 @@ class ValueTodaySpider(scrapy.Spider):
                 item = field.xpath(".//div[@class='field--item']/text()").extract_first()
                 if item is None:
                     item = field.xpath(".//div[@class='field--item']/a/text()").extract()
-                    if item is not None and len(item) == 1:
+                    item = [str.encode('ascii', 'ignore').decode('utf-8') for str in item]
+                    if len(item) == 1:
                         item = item.pop()
 
                 if item is not None:
