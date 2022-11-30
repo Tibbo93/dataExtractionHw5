@@ -24,16 +24,14 @@ class ValueTodayCompanyItem(scrapy.Item):
     world_rank = scrapy.Field()
     market_value = scrapy.Field()
 
-class CompaniesMarketcapCompanyItem(scrapy.Item):
+
+class CMCompanyItem(scrapy.Item):
     id = scrapy.Field()
     name = scrapy.Field()
-    rank = scrapy.Field()
-    market_cap = scrapy.Field()
-    country = scrapy.Field()
-    share_price = scrapy.Field()
-    change_1_day = scrapy.Field()
-    change_1_year = scrapy.Field()
-    categories = scrapy.Field()
-
-
-
+    # rank = scrapy.Field()
+    # market_cap = scrapy.Field()
+    # country = scrapy.Field()
+    # share_price = scrapy.Field()
+    # change_1_day = scrapy.Field()
+    # change_1_year = scrapy.Field()
+    # categories = scrapy.Field()
