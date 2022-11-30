@@ -9,14 +9,26 @@ class CMSpyder(scrapy.Spider):
     name = 'CompaniesMarketcap'
     allowed_domains = ['companiesmarketcap.com']
     start_urls = ['https://companiesmarketcap.com/united-kingdom/largest-companies-in-the-uk-by-market-cap/']
+    fields_to_extract = ['name', 'rank', 'market_cap', 'country', 'share_price', 'change_1_day', 'change_1_year']
 
-    def __init__(self):
+    def __init__(self, num_instances=20):
         super().__init__()
+        self.num_instances = int(num_instances)
 
     def parse(self, response):
         companies_url = response.xpath(".//td[contains(@class, 'name-td')]/div[2]/a/@href").extract()
-        url = companies_url[0]
-        yield response.follow(url, self.parse_company)
+        #url = companies_url[0]
+        #yield response.follow(url, self.parse_company)
+        for url in companies_url:
+            if self.num_instances <= 0:
+                return
+            self.num_instances -= 1
+            yield response.follow(url, self.parse_company)
+
+        # make request for next page
+        next_page = response.xpath(".//nav/ul[contains(@class, 'pagination')]/li/a/@href").extract_first()
+        if next_page is not None:
+            yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
         company = CMCompanyItem()
