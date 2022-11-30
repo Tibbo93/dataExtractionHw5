@@ -76,3 +76,6 @@ class ValueTodaySpider(scrapy.Spider):
             company[key] = fields[key]
 
         return company
+
+
+
