@@ -39,3 +39,10 @@ class CMCompanyItem(scrapy.Item):
 class DisfoldCompanyItem(scrapy.Item):
     id = scrapy.Field()
     name = scrapy.Field()
+    official_name = scrapy.Field()
+    headquarters_continent = scrapy.Field()
+    headquarters_country = scrapy.Field()
+    employees = scrapy.Field()
+    ceo = scrapy.Field()
+    market_cap = scrapy.Field()
+    gbp = scrapy.Field()
