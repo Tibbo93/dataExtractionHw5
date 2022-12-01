@@ -35,3 +35,7 @@ class CMCompanyItem(scrapy.Item):
     change_1_day = scrapy.Field()
     change_1_year = scrapy.Field()
     # categories = scrapy.Field()
+
+class DisfoldCompanyItem(scrapy.Item):
+    id = scrapy.Field()
+    name = scrapy.Field()
