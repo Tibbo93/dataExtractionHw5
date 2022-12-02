@@ -36,6 +36,7 @@ class CMCompanyItem(scrapy.Item):
     change_1_year = scrapy.Field()
     # categories = scrapy.Field()
 
+
 class DisfoldCompanyItem(scrapy.Item):
     id = scrapy.Field()
     name = scrapy.Field()
@@ -46,3 +47,4 @@ class DisfoldCompanyItem(scrapy.Item):
     ceo = scrapy.Field()
     market_cap = scrapy.Field()
     gbp = scrapy.Field()
+    categories = scrapy.Field()

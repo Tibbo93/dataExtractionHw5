@@ -26,12 +26,12 @@ class DisfoldSpyder(scrapy.Spider):
                 return
             self.num_instances -= 1
             yield response.follow(url, self.parse_company)
-        # yield response.follow(url, self.parse_company)
+        yield response.follow(url, self.parse_company)
 
         # make request for next page
-        next_page = response.xpath(".//ul[contains(@class, 'pagination')]/li[2]/a/@href").extract_first()
-        if next_page is not None:
-            yield response.follow(next_page, self.parse)
+        #next_page = response.xpath(".//ul[contains(@class, 'pagination')]/li[2]/a/@href").extract_first()
+        #if next_page is not None:
+       #     yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
         company = DisfoldCompanyItem()
@@ -39,33 +39,44 @@ class DisfoldSpyder(scrapy.Spider):
         # Id
         fields = {'id': uuid.uuid4().hex}
 
+
+        # DA FARE --> //div[contains(@class, 'card-content cyan darken-4')]/p/text()
+
+
+
+
+
+
+
         # Name
         name = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/h1/text()").extract_first()
         fields['name'] = string.capwords(name.strip())
 
         # Official Name
         official_name = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[2]/text()").extract_first()
-        official_name = official_name[15:]
-        fields['official_name'] = official_name.strip()
+        if official_name is not None:
+            official_name = official_name[15:]
+            fields['official_name'] = official_name
 
         # Headquarters Continent & Headquarters Country
-        headquarters = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[3]/text()").extract_first()
-        headquarters = headquarters[14:]
-        list = headquarters.split(',')
-        # headquarters_country = re.sub(r'\s+', '', list[0])
-        # headquarters_continent = re.sub(r'\s+', '', list[1])
-        fields['headquarters_country'] = re.sub(r'\s+', '', list[0])
-        fields['headquarters_continent'] = re.sub(r'\s+', '', list[1])
+        #headquarters = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[3]/text()").extract_first()
+        #if headquarters != None:
+        #    headquarters = headquarters[14:]
+        #    list = headquarters.split(',')
+        #    fields['headquarters_country'] = re.sub(r'\s+', '', list[0])
+        #    fields['headquarters_continent'] = re.sub(r'\s+', '', list[1])
 
         # Employees
         employees = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[4]/text()").extract_first();
-        employees = employees[11:]
-        fields['employees'] = employees.strip()
+        if employees is not None:
+            employees = employees[11:]
+            fields['employees'] = employees.strip()
 
         # Ceo
         ceo = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[5]/text()").extract_first()
-        ceo = ceo[5:]
-        fields['ceo'] = ceo.strip()
+        if ceo is not None:
+            ceo = ceo[5:]
+            fields['ceo'] = ceo.strip()
 
         # Market Cap
         market_cap = response.xpath(".//p[contains(@class,'mcap')]/text()").extract_first()
@@ -73,7 +84,14 @@ class DisfoldSpyder(scrapy.Spider):
 
         # GBP as of April 1, 2022
         gbp = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[3]/div/div/p[3]/text()").extract_first()
-        fields['gbp'] = gbp.strip()[2:]
+        if gbp is not None:
+            fields['gbp'] = gbp.strip()[2:]
+
+        # Categories
+        categories = response.xpath("//div[contains(@class, 'comp-categs')]/div[contains(@class, 'card-content')]/a/text()[2]").extract()
+        fields['categories'] = []
+        for category in categories:
+            fields['categories'].append(re.sub(r'\s+', '', category))
 
         for key in fields:
             company[key] = fields[key]
