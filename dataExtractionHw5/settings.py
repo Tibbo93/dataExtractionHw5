@@ -14,8 +14,8 @@ NEWSPIDER_MODULE = 'dataExtractionHw5.spiders'
 # OUTPUT_FILE_PATHNAME = '/Users/alessandro/Desktop/Università/Primo anno/Primo semestre/Ingegneria dei dati ' \
 #            '22:23/Homework/Homework 5/value_today_companies_dataset.jsonl'
 
-FILENAME = 'disfold_dataset.jsonl'
-# FILENAME = 'companies_marketcap_dataset.jsonl'
+# FILENAME = 'disfold_dataset.jsonl'
+FILENAME = 'companies_marketcap_dataset.jsonl'
 
 OUTPUT_FILE_PATHNAME = './dataExtractionHw5/datasets/' + FILENAME
 

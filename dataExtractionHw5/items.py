@@ -34,7 +34,7 @@ class CMCompanyItem(scrapy.Item):
     share_price = scrapy.Field()
     change_1_day = scrapy.Field()
     change_1_year = scrapy.Field()
-    # categories = scrapy.Field()
+    categories = scrapy.Field()
 
 
 class DisfoldCompanyItem(scrapy.Item):

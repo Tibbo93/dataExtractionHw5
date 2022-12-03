@@ -13,9 +13,10 @@ class DisfoldSpyder(scrapy.Spider):
     fields_to_extract = ['Official Name:', 'Employees:', 'Headquarters:', 'CEO:']
     fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo'}
 
-    def __init__(self, num_instances=1000):
+    def __init__(self, num_instances=1100):
         super().__init__()
         self.num_instances = int(num_instances)
+
     def parse(self, response):
         companies_url = response.xpath(
             ".//table[contains(@class, 'striped responsive-table')]/tbody/tr/td[2]/a/@href").extract()
