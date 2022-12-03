@@ -10,17 +10,18 @@ class DisfoldSpyder(scrapy.Spider):
     name = 'Disfold'
     allowed_domains = ['disfold.com']
     start_urls = ['https://disfold.com/united-kingdom/companies/']
-    fields_to_extract = ['Name', 'Official Name', 'Headquarters Continent', 'Headquarters Country', 'Employees', 'CEO', 'Market Cap',
-                         'GBP as of April 1, 2022', 'Categories @@ DA FARE']
+    fields_to_extract = ['Official Name:', 'Employees:', 'Headquarters:', 'CEO:']
+    fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo'}
 
     def __init__(self, num_instances=20):
         super().__init__()
         self.num_instances = int(num_instances)
 
     def parse(self, response):
-        companies_url = response.xpath(".//table[contains(@class, 'striped responsive-table')]/tbody/tr/td[2]/a/@href").extract()
-        #url = companies_url[0]
-        #yield response.follow(url, self.parse_company)
+        companies_url = response.xpath(
+            ".//table[contains(@class, 'striped responsive-table')]/tbody/tr/td[2]/a/@href").extract()
+        # url = companies_url[0]
+        # yield response.follow(url, self.parse_company)
         for url in companies_url:
             if self.num_instances <= 0:
                 return
@@ -31,7 +32,7 @@ class DisfoldSpyder(scrapy.Spider):
         # make request for next page
         #next_page = response.xpath(".//ul[contains(@class, 'pagination')]/li[2]/a/@href").extract_first()
         #if next_page is not None:
-       #     yield response.follow(next_page, self.parse)
+        #    yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
         company = DisfoldCompanyItem()
@@ -39,56 +40,31 @@ class DisfoldSpyder(scrapy.Spider):
         # Id
         fields = {'id': uuid.uuid4().hex}
 
+        # CARD COMPANY
+        card_company = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p/text()").extract()
+        for row in card_company:
+            for label in self.fields_to_extract:
+                a = str(row)
+                if a.find(str(label)) != -1:
+                    if label == 'Headquarters:':
+                        country_continent = row[14:].split(',')
+                        fields['headquarters_country'] = re.sub(r'\s+', '', country_continent[0])
+                        fields['headquarters_continent'] = re.sub(r'\s+', '', country_continent[1])
+                    else:
+                        fields[str(self.fields_dictionary[label])] = row[len(label)+1:]
 
-        # DA FARE --> //div[contains(@class, 'card-content cyan darken-4')]/p/text()
-
-
-
-
-
-
-
-        # Name
-        name = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/h1/text()").extract_first()
-        fields['name'] = string.capwords(name.strip())
-
-        # Official Name
-        official_name = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[2]/text()").extract_first()
-        if official_name is not None:
-            official_name = official_name[15:]
-            fields['official_name'] = official_name
-
-        # Headquarters Continent & Headquarters Country
-        #headquarters = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[3]/text()").extract_first()
-        #if headquarters != None:
-        #    headquarters = headquarters[14:]
-        #    list = headquarters.split(',')
-        #    fields['headquarters_country'] = re.sub(r'\s+', '', list[0])
-        #    fields['headquarters_continent'] = re.sub(r'\s+', '', list[1])
-
-        # Employees
-        employees = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[4]/text()").extract_first();
-        if employees is not None:
-            employees = employees[11:]
-            fields['employees'] = employees.strip()
-
-        # Ceo
-        ceo = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p[5]/text()").extract_first()
-        if ceo is not None:
-            ceo = ceo[5:]
-            fields['ceo'] = ceo.strip()
-
-        # Market Cap
-        market_cap = response.xpath(".//p[contains(@class,'mcap')]/text()").extract_first()
-        fields['market_cap'] = market_cap.strip()
-
-        # GBP as of April 1, 2022
-        gbp = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[3]/div/div/p[3]/text()").extract_first()
-        if gbp is not None:
-            fields['gbp'] = gbp.strip()[2:]
+        # CARD MARKET CAP
+        market_cap = response.xpath(".//p[contains(@class, 'mcap')]/text()").extract()
+        fields['market_cap'] = market_cap
+        card_market_cap = \
+            response.xpath(".//div[contains(@class, 'card-content green darken-3 white-text')]/p/text()").extract()
+        for row in card_market_cap:
+            if row.find('US$') != -1:
+                fields['gbp'] = row.strip()[2:]
 
         # Categories
-        categories = response.xpath("//div[contains(@class, 'comp-categs')]/div[contains(@class, 'card-content')]/a/text()[2]").extract()
+        categories = response.xpath(
+            "//div[contains(@class, 'comp-categs')]/div[contains(@class, 'card-content')]/a/text()[2]").extract()
         fields['categories'] = []
         for category in categories:
             fields['categories'].append(re.sub(r'\s+', '', category))
