@@ -12,18 +12,13 @@ class DisfoldSpyder(scrapy.Spider):
     start_urls = ['https://disfold.com/united-kingdom/companies/']
     fields_to_extract = ['Official Name:', 'Employees:', 'Headquarters:', 'CEO:']
     fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo'}
-    num_page = 1
-    num_company = 1
 
     def __init__(self, num_instances=1000):
         super().__init__()
         self.num_instances = int(num_instances)
-
     def parse(self, response):
         companies_url = response.xpath(
             ".//table[contains(@class, 'striped responsive-table')]/tbody/tr/td[2]/a/@href").extract()
-        print("Page number: " + str(self.num_page))
-        self.num_page += 1
         for url in companies_url:
             if self.num_instances <= 0:
                 return
@@ -35,8 +30,6 @@ class DisfoldSpyder(scrapy.Spider):
              yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
-        print("Company number: " + str(self.num_company))
-        self.num_company += 1
         company = DisfoldCompanyItem()
         # Id
         fields = {'id': uuid.uuid4().hex}
