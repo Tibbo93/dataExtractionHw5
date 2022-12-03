@@ -8,7 +8,7 @@ from dataExtractionHw5.items import CMCompanyItem
 class CMSpyder(scrapy.Spider):
     name = 'CompaniesMarketcap'
     allowed_domains = ['companiesmarketcap.com']
-    start_urls = ['https://companiesmarketcap.com/united-kingdom/largest-companies-in-the-uk-by-market-cap/']
+    start_urls = ['https://companiesmarketcap.com/']
 
     def __init__(self, num_instances=1000):
         super().__init__()

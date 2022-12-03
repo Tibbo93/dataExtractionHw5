@@ -9,9 +9,10 @@ from dataExtractionHw5.items import DisfoldCompanyItem
 class DisfoldSpyder(scrapy.Spider):
     name = 'Disfold'
     allowed_domains = ['disfold.com']
-    start_urls = ['https://disfold.com/united-kingdom/companies/']
-    fields_to_extract = ['Official Name:', 'Employees:', 'Headquarters:', 'CEO:']
-    fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo'}
+    start_urls = ['https://disfold.com/world/companies/']
+    fields_to_extract = ['Official Name:', 'Employees:', 'Headquarters:', 'CEO:', 'Founded:']
+    fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo',
+                         'Founded:': 'founded'}
 
     def __init__(self, num_instances=1100):
         super().__init__()
@@ -28,7 +29,7 @@ class DisfoldSpyder(scrapy.Spider):
         # make request for next page
         next_page = response.xpath(".//i[contains(text(), 'chevron_right')]/parent::a/@href").extract_first()
         if next_page is not None:
-             yield response.follow(next_page, self.parse)
+            yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
         company = DisfoldCompanyItem()
@@ -48,7 +49,7 @@ class DisfoldSpyder(scrapy.Spider):
                         fields['headquarters_country'] = str(re.sub(r'\s+', '', country_continent[0]))
                         fields['headquarters_continent'] = str(re.sub(r'\s+', '', country_continent[1]))
                     else:
-                        fields[str(self.fields_dictionary[label])] = row[len(label)+1:]
+                        fields[str(self.fields_dictionary[label])] = row[len(label) + 1:]
         # CARD MARKET CAP
         market_cap = response.xpath(".//p[contains(@class, 'mcap')]/text()").extract_first()
         fields['market_cap'] = str(market_cap).strip()

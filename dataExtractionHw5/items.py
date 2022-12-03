@@ -47,4 +47,5 @@ class DisfoldCompanyItem(scrapy.Item):
     ceo = scrapy.Field()
     market_cap = scrapy.Field()
     gbp = scrapy.Field()
+    founded = scrapy.Field()
     categories = scrapy.Field()
