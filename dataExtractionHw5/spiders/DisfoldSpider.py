@@ -32,7 +32,7 @@ class DisfoldSpyder(scrapy.Spider):
         # make request for next page
         next_page = response.xpath(".//i[contains(text(), 'chevron_right')]/parent::a/@href").extract_first()
         if next_page is not None:
-            yield response.follow(next_page, self.parse)
+             yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
         company = DisfoldCompanyItem()
@@ -41,7 +41,7 @@ class DisfoldSpyder(scrapy.Spider):
         fields = {'id': uuid.uuid4().hex}
 
         # name
-        name = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/h1/text()").extract()
+        name = response.xpath(".//div[contains(@class, 'card-content cyan darken-4')]/h1/text()").extract_first()
         fields['name'] = string.capwords(name.strip())
 
         # CARD COMPANY
@@ -52,14 +52,14 @@ class DisfoldSpyder(scrapy.Spider):
                 if ss.find(str(label)) != -1:
                     if label == 'Headquarters:':
                         country_continent = row[14:].split(',')
-                        fields['headquarters_country'] = string.re.sub(r'\s+', '', country_continent[0])
-                        fields['headquarters_continent'] = string.re.sub(r'\s+', '', country_continent[1])
+                        fields['headquarters_country'] = str(re.sub(r'\s+', '', country_continent[0]))
+                        fields['headquarters_continent'] = str(re.sub(r'\s+', '', country_continent[1]))
                     else:
                         fields[str(self.fields_dictionary[label])] = row[len(label)+1:]
 
         # CARD MARKET CAP
-        market_cap = response.xpath(".//p[contains(@class, 'mcap')]/text()").extract()
-        fields['market_cap'] = string.market_cap.strip()
+        market_cap = response.xpath(".//p[contains(@class, 'mcap')]/text()").extract_first()
+        fields['market_cap'] = str(market_cap).strip()
         card_market_cap = \
             response.xpath(".//div[contains(@class, 'card-content green darken-3 white-text')]/p/text()").extract()
         for row in card_market_cap:
