@@ -12,6 +12,8 @@ class DisfoldSpyder(scrapy.Spider):
     start_urls = ['https://disfold.com/united-kingdom/companies/']
     fields_to_extract = ['Official Name:', 'Employees:', 'Headquarters:', 'CEO:']
     fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo'}
+    num_page = 1
+    num_company = 1
 
     def __init__(self, num_instances=1000):
         super().__init__()
@@ -20,30 +22,27 @@ class DisfoldSpyder(scrapy.Spider):
     def parse(self, response):
         companies_url = response.xpath(
             ".//table[contains(@class, 'striped responsive-table')]/tbody/tr/td[2]/a/@href").extract()
-        # url = companies_url[0]
-        # yield response.follow(url, self.parse_company)
+        print("Page number: " + str(self.num_page))
+        self.num_page += 1
         for url in companies_url:
             if self.num_instances <= 0:
                 return
             self.num_instances -= 1
             yield response.follow(url, self.parse_company)
-        yield response.follow(url, self.parse_company)
-
         # make request for next page
         next_page = response.xpath(".//i[contains(text(), 'chevron_right')]/parent::a/@href").extract_first()
         if next_page is not None:
              yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
+        print("Company number: " + str(self.num_company))
+        self.num_company += 1
         company = DisfoldCompanyItem()
-
         # Id
         fields = {'id': uuid.uuid4().hex}
-
         # name
         name = response.xpath(".//div[contains(@class, 'card-content cyan darken-4')]/h1/text()").extract_first()
         fields['name'] = string.capwords(name.strip())
-
         # CARD COMPANY
         card_company = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p/text()").extract()
         for row in card_company:
@@ -56,7 +55,6 @@ class DisfoldSpyder(scrapy.Spider):
                         fields['headquarters_continent'] = str(re.sub(r'\s+', '', country_continent[1]))
                     else:
                         fields[str(self.fields_dictionary[label])] = row[len(label)+1:]
-
         # CARD MARKET CAP
         market_cap = response.xpath(".//p[contains(@class, 'mcap')]/text()").extract_first()
         fields['market_cap'] = str(market_cap).strip()
@@ -65,7 +63,6 @@ class DisfoldSpyder(scrapy.Spider):
         for row in card_market_cap:
             if row.find('US$') != -1:
                 fields['gbp'] = row.strip()[2:]
-
         # Categories
         categories = response.xpath(
             "//div[contains(@class, 'comp-categs')]/div[contains(@class, 'card-content')]/a/text()[2]").extract()
