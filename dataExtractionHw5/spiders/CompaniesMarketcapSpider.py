@@ -45,6 +45,8 @@ class CMSpyder(scrapy.Spider):
         fields['market_cap'] = market_cap.strip()
         # country
         country = response.xpath(".//div[contains(text(), 'Country')]/preceding-sibling::div/a/span/text()").extract_first()
+        if country is None:
+            country = response.xpath(".//div[contains(text(), 'Country')]/preceding-sibling::div/span/text()").extract_first()
         fields['country'] = country.strip()
         # share_price
         share_price = response.xpath(".//div[contains(text(), 'Share price')]/preceding-sibling::div/text()").extract_first()
