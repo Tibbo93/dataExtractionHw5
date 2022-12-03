@@ -59,7 +59,7 @@ class DisfoldSpyder(scrapy.Spider):
 
         # CARD MARKET CAP
         market_cap = response.xpath(".//p[contains(@class, 'mcap')]/text()").extract()
-        fields['market_cap'] = market_cap
+        fields['market_cap'] = string.market_cap.strip()
         card_market_cap = \
             response.xpath(".//div[contains(@class, 'card-content green darken-3 white-text')]/p/text()").extract()
         for row in card_market_cap:
