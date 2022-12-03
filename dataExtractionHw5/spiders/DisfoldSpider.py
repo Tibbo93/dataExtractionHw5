@@ -13,7 +13,7 @@ class DisfoldSpyder(scrapy.Spider):
     fields_to_extract = ['Official Name:', 'Employees:', 'Headquarters:', 'CEO:']
     fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo'}
 
-    def __init__(self, num_instances=20):
+    def __init__(self, num_instances=1000):
         super().__init__()
         self.num_instances = int(num_instances)
 
@@ -30,9 +30,9 @@ class DisfoldSpyder(scrapy.Spider):
         yield response.follow(url, self.parse_company)
 
         # make request for next page
-        #next_page = response.xpath(".//ul[contains(@class, 'pagination')]/li[2]/a/@href").extract_first()
-        #if next_page is not None:
-        #    yield response.follow(next_page, self.parse)
+        next_page = response.xpath(".//i[contains(text(), 'chevron_right')]/parent::a/@href").extract_first()
+        if next_page is not None:
+            yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
         company = DisfoldCompanyItem()
@@ -40,16 +40,20 @@ class DisfoldSpyder(scrapy.Spider):
         # Id
         fields = {'id': uuid.uuid4().hex}
 
+        # name
+        name = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/h1/text()").extract()
+        fields['name'] = string.capwords(name.strip())
+
         # CARD COMPANY
         card_company = response.xpath(".//div[contains(@class, 'company')]/div[1]/div[2]/div/div/p/text()").extract()
         for row in card_company:
             for label in self.fields_to_extract:
-                a = str(row)
-                if a.find(str(label)) != -1:
+                ss = str(row)
+                if ss.find(str(label)) != -1:
                     if label == 'Headquarters:':
                         country_continent = row[14:].split(',')
-                        fields['headquarters_country'] = re.sub(r'\s+', '', country_continent[0])
-                        fields['headquarters_continent'] = re.sub(r'\s+', '', country_continent[1])
+                        fields['headquarters_country'] = string.re.sub(r'\s+', '', country_continent[0])
+                        fields['headquarters_continent'] = string.re.sub(r'\s+', '', country_continent[1])
                     else:
                         fields[str(self.fields_dictionary[label])] = row[len(label)+1:]
 
