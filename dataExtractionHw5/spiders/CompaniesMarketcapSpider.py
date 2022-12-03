@@ -9,7 +9,6 @@ class CMSpyder(scrapy.Spider):
     name = 'CompaniesMarketcap'
     allowed_domains = ['companiesmarketcap.com']
     start_urls = ['https://companiesmarketcap.com/united-kingdom/largest-companies-in-the-uk-by-market-cap/']
-    fields_to_extract = ['Name', 'Rank', 'Market Cap', 'Country', 'Share Price', 'Change 1 day', 'Change 1 year', 'Categories @@ DA FARE']
 
     def __init__(self, num_instances=1000):
         super().__init__()
