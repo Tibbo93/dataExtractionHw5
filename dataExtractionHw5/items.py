@@ -57,4 +57,10 @@ class HitHorizonsCompanyItem(scrapy.Item):
     address = scrapy.Field()
     nation = scrapy.Field()
     hhid = scrapy.Field()
+    industry = scrapy.Field()
+    sic_code = scrapy.Field()
+    type = scrapy.Field()
+    est_of_ownership = scrapy.Field()
+
+
 
