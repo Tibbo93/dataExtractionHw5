@@ -16,7 +16,8 @@ NEWSPIDER_MODULE = 'dataExtractionHw5.spiders'
 
 # FILENAME = 'disfold_dataset.jsonl'
 # FILENAME = 'companies_marketcap_dataset.jsonl'
-FILENAME = 'value_today_dataset.jsonl'
+# FILENAME = 'value_today_dataset.jsonl'
+FILENAME = 'hit_horizons_dataset.jsonl'
 
 OUTPUT_FILE_PATHNAME = './dataExtractionHw5/datasets/' + FILENAME
 

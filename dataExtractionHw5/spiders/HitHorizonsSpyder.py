@@ -18,23 +18,23 @@ class HitHorizonSpyder(scrapy.Spider):
     # fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo',
     #                     'Founded:': 'founded'}
 
-    def __init__(self, num_instances=10):
+    def __init__(self, num_instances=1000):
         super().__init__()
         self.num_instances = int(num_instances)
 
     def parse(self, response):
         companies_url = response.xpath(".//div[contains(@class, 'search-result-title')]/h3/a/@href").extract()
-        url = companies_url[0]
-        yield response.follow(url, self.parse_company)
-        #for url in companies_url:
-        #    if self.num_instances <= 0:
-        #        return
-        #    self.num_instances -= 1
-        #    yield response.follow(url, self.parse_company)
+        #url = companies_url[0]
+        #yield response.follow(url, self.parse_company)
+        for url in companies_url:
+            if self.num_instances <= 0:
+                return
+            self.num_instances -= 1
+            yield response.follow(url, self.parse_company)
         # make request for next page
-        # next_page = response.xpath(".//i[contains(text(), 'chevron_right')]/parent::a/@href").extract_first()
-        # if next_page is not None:
-        #    yield response.follow(next_page, self.parse)
+        next_page = response.xpath(".//li[contains(@class, 'paginator-next')]/a/@href").extract_first()
+        if next_page is not None:
+            yield response.follow(next_page, self.parse)
 
     def parse_company(self, response):
         company = HitHorizonsCompanyItem()
