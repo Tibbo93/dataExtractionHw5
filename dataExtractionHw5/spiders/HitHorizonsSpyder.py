@@ -45,6 +45,33 @@ class HitHorizonSpyder(scrapy.Spider):
                               "'Name')]/following-sibling::span/text()").extract_first()
         fields['name'] = string.capwords(name.strip())
         # address
+        address = response.xpath(".//ul[contains(@class, 'overview-data-1')]/li/strong[contains(text(), "
+                                 "'Address')]/following-sibling::span/text()").extract_first()
+        fields['address'] = address.strip()
+        # nation
+        nation = response.xpath(".//ul[contains(@class, 'overview-data-1')]/li/strong[contains(text(), 'National "
+                                "ID')]/following-sibling::span/text()").extract_first()
+        fields['nation'] = nation.strip()
+        # hithorizons id
+        hhid = response.xpath(".//ul[contains(@class, 'overview-data-1')]/li/strong[contains(text(), 'HitHorizons "
+                              "ID')]/following-sibling::span/text()").extract_first()
+        fields['hhid'] = hhid.strip()
+        # industry
+        industry = response.xpath(".//ul[contains(@class, 'overview-data-2')]/li/strong[contains(text(), "
+                                  "'Industry')]/following-sibling::span/text()[2]").extract_first()
+        fields['industry'] = industry.strip()
+        # sic code
+        sic_code = response.xpath(".//ul[contains(@class, 'overview-data-2')]/li/strong[contains(text(), "
+                                  "'SIC Code')]/following-sibling::span/text()[2]").extract_first()
+        fields['sic_code'] = sic_code.strip()
+        # type
+        type = response.xpath(".//ul[contains(@class, 'overview-data-2')]/li/strong[contains(text(), "
+                              "'Type')]/following-sibling::span/text()").extract_first()
+        fields['type'] = type.strip()
+        # est. of ownership
+        est_of_ownership = response.xpath(".//ul[contains(@class, 'overview-data-2')]/li/strong[contains(text(), "
+                                          "'Est. of Ownership')]/following-sibling::span/text()").extract_first()
+        fields['est_of_ownership'] = est_of_ownership.strip()
 
         for key in fields:
             company[key] = fields[key]

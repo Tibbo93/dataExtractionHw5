@@ -54,4 +54,7 @@ class DisfoldCompanyItem(scrapy.Item):
 class HitHorizonsCompanyItem(scrapy.Item):
     id = scrapy.Field()
     name = scrapy.Field()
+    address = scrapy.Field()
+    nation = scrapy.Field()
+    hhid = scrapy.Field()
 
