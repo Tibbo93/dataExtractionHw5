@@ -49,3 +49,9 @@ class DisfoldCompanyItem(scrapy.Item):
     gbp = scrapy.Field()
     founded = scrapy.Field()
     categories = scrapy.Field()
+
+
+class HitHorizonsCompanyItem(scrapy.Item):
+    id = scrapy.Field()
+    name = scrapy.Field()
+
