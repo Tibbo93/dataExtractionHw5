@@ -5,22 +5,22 @@ from scrapy.exporters import JsonLinesItemExporter
 
 class DataExtractionHw5Pipeline:
 
-    def __init__(self, file_name):
+    def __init__(self, filename):
         self.exporter = None
-        self.file_name = file_name
+        self.filename = filename
         self.file_handle = None
 
     @classmethod
     def from_crawler(cls, crawler):
-        output_file_name = crawler.settings.get('OUTPUT_FILE_PATHNAME')
-        return cls(output_file_name)
+        print()
+        output_filename = crawler.settings.get('OUTPUT_FILE_PATHNAME')
+        return cls(output_filename)
 
     def open_spider(self, spider):
         logging.info('JsonLines export opened')
-
-        file = open(self.file_name, 'wb')
+        filename = self.filename + spider.name + '_dataset.jsonl'
+        file = open(filename, 'wb')
         self.file_handle = file
-
         self.exporter = JsonLinesItemExporter(file, encoding='utf-8')
         self.exporter.start_exporting()
 

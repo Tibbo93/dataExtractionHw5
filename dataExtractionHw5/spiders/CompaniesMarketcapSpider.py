@@ -6,8 +6,8 @@ from dataExtractionHw5.items import CMCompanyItem
 
 
 class CMSpyder(scrapy.Spider):
-    name = 'CompaniesMarketcap'
-    allowed_domains = ['www.companiesmarketcap.com']
+    name = 'companiesMarketCap'
+    allowed_domains = ['companiesmarketcap.com']
     start_urls = ['https://companiesmarketcap.com/']
 
     def __init__(self, num_instances=1000):

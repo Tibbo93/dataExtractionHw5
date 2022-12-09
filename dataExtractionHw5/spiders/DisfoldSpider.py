@@ -7,7 +7,7 @@ from dataExtractionHw5.items import DisfoldCompanyItem
 
 
 class DisfoldSpyder(scrapy.Spider):
-    name = 'Disfold'
+    name = 'disfold'
     allowed_domains = ['disfold.com']
     start_urls = ['https://disfold.com/world/companies/']
     fields_to_extract = ['Official Name:', 'Employees:', 'Headquarters:', 'CEO:', 'Founded:']

@@ -6,7 +6,7 @@ from dataExtractionHw5.items import HitHorizonsCompanyItem
 
 
 class HitHorizonSpyder(scrapy.Spider):
-    name = 'HitHorizons'
+    name = 'hitHorizons'
     allowed_domains = ['hithorizons.com']
     start_urls = ['https://www.hithorizons.com/search?Name=&Address=italy&ShowBranches=false&CompanyTypes=10'
                   '&CompanyTypes=11&CompanyTypes=12&CompanyTypes=160&CompanyTypes=3&CompanyTypes=14&CompanyTypes=102'
