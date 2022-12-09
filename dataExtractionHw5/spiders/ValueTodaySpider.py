@@ -8,7 +8,7 @@ from dataExtractionHw5.items import ValueTodayCompanyItem
 
 class ValueTodaySpider(scrapy.Spider):
     name = 'valueToday'
-    allowed_domains = ['www.value.today']
+    allowed_domains = ['value.today']
     start_urls = ['https://www.value.today/']
     fields_to_extract = \
         ['Headquarters Country', 'Headquarters Sub Region', 'World Rank (Jan-07-2022)', 'Market Value (Jan-07-2022)',

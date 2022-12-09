@@ -1,5 +1,5 @@
 import logging
-from itemadapter import ItemAdapter
+
 from scrapy.exporters import JsonLinesItemExporter
 
 
