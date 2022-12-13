@@ -67,7 +67,7 @@ class DisfoldSpyder(scrapy.Spider):
 
         for key in fields:
             if not isinstance(fields[key], list):
-                company[key] = fields[key].encode('ascii', 'ignore').decode('utf-8')
+                company[key] = fields[key].replace("\xa0", " ")
             else:
                 company[key] = fields[key]
 
