@@ -66,6 +66,9 @@ class DisfoldSpyder(scrapy.Spider):
             fields['categories'].append(re.sub(r'\s+', '', category))
 
         for key in fields:
-            company[key] = fields[key]
+            if not isinstance(fields[key], list):
+                company[key] = fields[key].encode('ascii', 'ignore').decode('utf-8')
+            else:
+                company[key] = fields[key]
 
         return company
