@@ -14,7 +14,7 @@ class DisfoldSpyder(scrapy.Spider):
     fields_dictionary = {'Official Name:': 'official_name', 'Employees:': 'employees', 'CEO:': 'ceo',
                          'Founded:': 'founded'}
 
-    def __init__(self, num_instances=1100):
+    def __init__(self, num_instances=1000):
         super().__init__()
         self.num_instances = int(num_instances)
 
